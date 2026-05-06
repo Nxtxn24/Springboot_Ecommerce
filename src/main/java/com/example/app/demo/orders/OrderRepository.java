@@ -13,4 +13,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
     // 🔑 Get orders sorted by latest first (useful for order history)
     List<OrderEntity> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    
 }

@@ -59,6 +59,17 @@ public class OrderService {
         return dto;
     }
 
+    private List<OrderResponseDto> mapToDTO(List<OrderEntity> orders) {
+
+            List<OrderResponseDto> dtoList = new ArrayList<>();
+
+            for (OrderEntity order : orders) {
+                dtoList.add(mapToDTO(order)); // reuse your existing method
+            }
+
+            return dtoList;
+        }
+
     // 1. CHECKOUT (Cart → Order)
     public OrderResponseDto checkout(String email) {
 
@@ -111,15 +122,13 @@ public class OrderService {
     //  2. Get all orders for a user
     public List<OrderResponseDto> getUserOrders(String email) {
 
-        UserEntity user = getUser(email);
+            UserEntity user = getUser(email);
 
-        List<OrderEntity> orders =
-            orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+            List<OrderEntity> orders =
+                    orderRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
 
-        return orders.stream()
-                .map(this::mapToDTO)
-                .toList();
-    }
+            return mapToDTO(orders);
+        }
 
     // 3. Get single order (with ownership check)
     public OrderResponseDto getOrderById(String email, Long orderId) {
