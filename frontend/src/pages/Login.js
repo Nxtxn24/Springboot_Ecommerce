@@ -1,6 +1,9 @@
+import { parseJwt } from "../utils/jwt";
 import { useState, useEffect } from "react";
 import { api } from "../api/axios";
 import { useNavigate } from "react-router-dom";
+
+import { getAuthUser } from "../utils/authHelper";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,11 +11,15 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Auto redirect if already logged in
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/products");
+    const user = getAuthUser();
+
+    if (user) {
+      if (user.role === "ADMIN") {
+        navigate("/admin/orders");
+      } else {
+        navigate("/products");
+      }
     }
   }, [navigate]);
 
@@ -28,12 +35,20 @@ export default function Login() {
 
       const token = response.data;
 
-      // 💾 STORE JWT
       localStorage.setItem("token", token);
-      localStorage.setItem("userEmail", email);
 
-      // 🚀 redirect after login
-      navigate("/products");
+      const user = getAuthUser();
+
+      if (!user) throw new Error("Invalid token");
+
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("email", user.sub);
+
+      if (user.role === "ADMIN") {
+        navigate("/admin/orders");
+      } else {
+        navigate("/products");
+      }
 
     } catch (err) {
       console.log(err);
@@ -105,3 +120,8 @@ export default function Login() {
     </div>
   );
 }
+
+  
+
+
+  

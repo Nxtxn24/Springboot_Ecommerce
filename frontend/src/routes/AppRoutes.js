@@ -5,6 +5,7 @@ import Cart from "../pages/Cart";
 import Orders from "../pages/Orders";
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "./Navbar";
+import AdminOrders from "../pages/AdminOrders";
 
 function Layout() {
   const location = useLocation();
@@ -41,11 +42,21 @@ function Layout() {
         <Route
           path="/orders"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="USER">
               <Orders />
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute role="ADMIN">
+              <AdminOrders />
+            </ProtectedRoute>
+          }
+        />
+        
       </Routes>
     </>
   );

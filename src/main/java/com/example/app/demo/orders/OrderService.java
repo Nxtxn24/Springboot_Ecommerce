@@ -157,6 +157,11 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    public List<OrderResponseDto> getAllOrders() {
+        List<OrderEntity> orders = orderRepository.findAll();
+        return mapToDTO(orders);
+    }
+
 
     private void validateStatusTransition(OrderStatus current, OrderStatus next) {
 

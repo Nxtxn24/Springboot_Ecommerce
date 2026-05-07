@@ -39,6 +39,7 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
 
                             // (Optional admin-only order actions)
+                            .requestMatchers("/admin/**").hasRole("ADMIN")
                             .requestMatchers(HttpMethod.PATCH, "/orders/**").hasRole("ADMIN")
 
                             .anyRequest().authenticated()

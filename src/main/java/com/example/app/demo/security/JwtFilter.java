@@ -33,6 +33,8 @@ public class JwtFilter extends GenericFilter {
                 String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
 
+                System.out.println("ROLE FROM TOKEN: " + role);
+
                 List<GrantedAuthority> authorities =
                     List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
