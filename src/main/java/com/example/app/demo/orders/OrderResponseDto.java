@@ -11,9 +11,12 @@ public class OrderResponseDto {
     private double totalAmount;
     private String status;
     private LocalDateTime createdAt;
+    private Long userId;
 
     private List<OrderItemDto> items;
 
+
+    
     public Long getOrderId() {
         return orderId;
     }
@@ -52,6 +55,14 @@ public class OrderResponseDto {
 
     public void setItems(List<OrderItemDto> items) {
         this.items = items;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     // getters + setters

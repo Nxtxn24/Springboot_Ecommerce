@@ -60,14 +60,14 @@ export default function Orders() {
 
           {orders.map((order) => (
             <div
-              key={order.id}
+              key={order.orderId}
               className="bg-white rounded-xl shadow-md p-5"
             >
 
               {/* Order Header */}
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-lg">
-                  Order #{order.id}
+                  Order #{order.orderId}
                 </h3>
 
                 <span className="text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-600">
@@ -78,6 +78,10 @@ export default function Orders() {
               {/* Order Info */}
               <p className="text-gray-600 mb-4">
                 Total: ₹{order.totalAmount}
+              </p>
+
+              <p className="text-sm text-gray-500">
+                User ID: <span className="font-medium">{order.userId}</span>
               </p>
 
               {/* Items */}

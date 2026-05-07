@@ -39,6 +39,7 @@ public class OrderService {
         dto.setTotalAmount(order.getTotalAmount());
         dto.setStatus(order.getStatus().toString());
         dto.setCreatedAt(order.getCreatedAt());
+        dto.setUserId(order.getUser().getId());
 
         List<OrderItemDto> itemDTOs = new ArrayList<>();
 
@@ -50,6 +51,7 @@ public class OrderService {
             itemDTO.setProductName(item.getProductName());
             itemDTO.setPriceAtPurchase(item.getPriceAtPurchase());
             itemDTO.setQuantity(item.getQuantity());
+            
 
             itemDTOs.add(itemDTO);
         }
