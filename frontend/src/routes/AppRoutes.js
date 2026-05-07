@@ -6,19 +6,25 @@ import Orders from "../pages/Orders";
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "./Navbar";
 import AdminOrders from "../pages/AdminOrders";
+import Register from "../pages/Register";
+import { Navigate } from "react-router-dom";
 
 function Layout() {
   const location = useLocation();
 
-  const hideNavbar = location.pathname === "/login";
+  const authPages = ["/login", "/register"];
+
+  const hideNavbar = authPages.includes(location.pathname);
 
   return (
     <>
       {!hideNavbar && <Navbar />}
 
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         {/* PUBLIC ROUTE */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* PROTECTED ROUTES */}
         <Route

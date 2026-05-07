@@ -2,7 +2,7 @@ import { parseJwt } from "../utils/jwt";
 import { useState, useEffect } from "react";
 import { api } from "../api/axios";
 import { useNavigate } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import { getAuthUser } from "../utils/authHelper";
 
 export default function Login() {
@@ -115,6 +115,18 @@ export default function Login() {
           </button>
 
         </form>
+
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Don’t have an account?
+            <Link
+              to="/register"
+              className="text-blue-600 font-medium ml-1 hover:underline"
+            >
+              Register
+            </Link>
+          </p>
+        </div>
 
       </div>
     </div>
