@@ -21,8 +21,10 @@ public class Product {
 
     @Column(nullable = false)
     private int stockQuantity;
-    
+
     private String category;
+
+    private String imageUrl;
 
     public Product() {}
 
@@ -71,4 +73,14 @@ public class Product {
     public void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    
 }

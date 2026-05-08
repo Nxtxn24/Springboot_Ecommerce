@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.app.demo.products.Product;
 import com.example.app.demo.products.ProductRequestDto;
 import com.example.app.demo.products.ProductService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController

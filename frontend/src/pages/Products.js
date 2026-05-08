@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/axios";
 
 export default function Products() {
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -49,10 +50,18 @@ export default function Products() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
         {products.map((p) => (
+
           <div
             key={p.id}
             className="bg-white rounded-xl shadow-md hover:shadow-lg transition p-4 flex flex-col"
           >
+
+            {/* Image */}
+            <img
+              src={p.imageUrl}
+              alt={p.name}
+              className="w-full h-40 object-cover rounded-md mb-3"
+            />
 
             {/* Product Name */}
             <h3 className="text-lg font-semibold mb-2">

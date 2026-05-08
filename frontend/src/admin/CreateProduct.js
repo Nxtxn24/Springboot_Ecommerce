@@ -11,7 +11,8 @@ export default function CreateProduct() {
     description: "",
     price: "",
     category: "",
-    stockQuantity: ""
+    stockQuantity: "",
+    imageUrl: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -165,6 +166,21 @@ export default function CreateProduct() {
             />
 
           </div>
+
+          <div>
+            <label className="block mb-1 font-medium">
+                Product Image URL
+            </label>
+
+            <input
+                type="text"
+                name="imageUrl"
+                value={formData.imageUrl}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+                placeholder="https://..."
+            />
+            </div>
 
           {/* Submit */}
           <button

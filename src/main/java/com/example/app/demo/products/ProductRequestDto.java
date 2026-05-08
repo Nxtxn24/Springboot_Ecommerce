@@ -8,6 +8,7 @@ public class ProductRequestDto {
     private double price;
     private String category;
     private int stockQuantity;
+    private String imageUrl;
 
     public ProductRequestDto() {
     }
@@ -66,5 +67,14 @@ public class ProductRequestDto {
         this.stockQuantity = stockQuantity;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    
     
 }

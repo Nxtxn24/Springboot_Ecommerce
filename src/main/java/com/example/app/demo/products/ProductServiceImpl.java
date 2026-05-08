@@ -22,6 +22,7 @@ public class ProductServiceImpl implements ProductService {
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setCategory(dto.getCategory());
+        product.setImageUrl(dto.getImageUrl());
 
         return productRepository.save(product);
     }
@@ -47,6 +48,7 @@ public class ProductServiceImpl implements ProductService {
         existing.setPrice(dto.getPrice());
         existing.setCategory(dto.getCategory());
         existing.setStockQuantity(dto.getStockQuantity());
+        existing.setImageUrl(dto.getImageUrl());
 
         return productRepository.save(existing);
     }
@@ -55,4 +57,7 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+
+    
 }
