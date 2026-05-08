@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CartController {
 
-    private final CartService cartService;
+    private final CartServiceImpl cartService;
 
     
     @GetMapping

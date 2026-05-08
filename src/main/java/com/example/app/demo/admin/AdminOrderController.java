@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.app.demo.orders.OrderEntity;
 import com.example.app.demo.orders.OrderResponseDto;
-import com.example.app.demo.orders.OrderService;
+import com.example.app.demo.orders.OrderServiceImpl;
 import com.example.app.demo.orders.OrderStatus;
 
 @RestController
@@ -21,9 +21,9 @@ import com.example.app.demo.orders.OrderStatus;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminOrderController {
 
-    private final OrderService orderService;
+    private final OrderServiceImpl orderService;
 
-    public AdminOrderController(OrderService orderService) {
+    public AdminOrderController(OrderServiceImpl orderService) {
         this.orderService = orderService;
     }
 
