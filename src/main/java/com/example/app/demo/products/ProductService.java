@@ -1,6 +1,5 @@
 package com.example.app.demo.products;
 
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 
