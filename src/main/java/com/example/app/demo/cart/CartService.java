@@ -1,9 +1,11 @@
 package com.example.app.demo.cart;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.example.app.demo.cartItem.CartItem;
+import com.example.app.demo.cartItem.CartItemResponse;
 import com.example.app.demo.products.Product;
 import com.example.app.demo.products.ProductRepository;
 import com.example.app.demo.users.UserEntity;
@@ -20,13 +22,13 @@ public class CartService {
     private final UserRepository userRepository;
     private final CartMapper cartMapper;
 
-    // 🔑 get user
+    
     private UserEntity getUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // 🛒 get or create cart
+    
     private Cart getOrCreateCart(UserEntity user) {
         return cartRepository.findByUserId(user.getId())
                 .orElseGet(() -> {
@@ -36,7 +38,7 @@ public class CartService {
                 });
     }
 
-    // 📄 GET CART
+    
     public CartResponseDto getCart(String email) {
         UserEntity user = getUser(email);
         Cart cart = getOrCreateCart(user);
@@ -44,7 +46,7 @@ public class CartService {
         return cartMapper.toDto(cart);
     }
 
-    // ➕ ADD TO CART
+    
     public CartResponseDto addToCart(String email, Long productId, int quantity) {
 
         UserEntity user = getUser(email);
@@ -75,7 +77,43 @@ public class CartService {
         return cartMapper.toDto(saved);
     }
 
-    // ❌ REMOVE ITEM
+    public CartResponseDto updateQuantity(String email, Long productId, int quantity) {
+
+        UserEntity user = getUser(email);
+
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+
+        CartItem item = cart.getItems().stream()
+                .filter(i -> i.getProduct().getId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        item.setQuantity(quantity);
+
+        Cart updatedCart = cartRepository.save(cart);
+
+        List<CartItemResponse> itemResponses = updatedCart.getItems()
+                .stream()
+                .map(cartItem -> {
+
+                    CartItemResponse response = new CartItemResponse();
+
+                    response.setProductId(cartItem.getProduct().getId());
+                    response.setProductName(cartItem.getProduct().getName());
+                    response.setQuantity(cartItem.getQuantity());
+
+                    return response;
+                })
+                .toList();
+
+        return new CartResponseDto(
+                updatedCart.getId(),
+                itemResponses
+        );
+    }
+
+    
     public CartResponseDto removeItem(String email, Long productId) {
 
         UserEntity user = getUser(email);
@@ -89,7 +127,7 @@ public class CartService {
         return cartMapper.toDto(saved);
     }
 
-    // 🧹 CLEAR CART
+    
     public CartResponseDto clearCart(String email) {
 
         UserEntity user = getUser(email);

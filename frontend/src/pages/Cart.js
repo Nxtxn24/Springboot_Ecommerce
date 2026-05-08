@@ -21,6 +21,40 @@ export default function Cart() {
     }
   };
 
+  const updateQuantity = async (productId, quantity) => {
+    try {
+
+      if (quantity <= 0) {
+        await api.delete(`/cart/remove/${productId}`);
+
+        setCart(prev => ({
+          ...prev,
+          items: prev.items.filter(
+            item => item.productId !== productId
+          )
+        }));
+
+        return;
+      }
+
+      await api.put(`/cart/update/${productId}`, {
+        quantity,
+      });
+
+      setCart(prev => ({
+        ...prev,
+        items: prev.items.map(item =>
+          item.productId === productId
+            ? { ...item, quantity }
+            : item
+        )
+      }));
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleCheckout = async () => {
     try {
       await api.post("/orders/checkout");
@@ -77,7 +111,36 @@ export default function Cart() {
               </p>
             </div>
 
-          </div>
+            {/* Right - Quantity Controls */}
+            <div className="flex items-center gap-3">
+
+              {/* Minus */}
+              <button
+                onClick={() =>
+                  updateQuantity(item.productId, item.quantity - 1)
+                }
+                className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-lg"
+              >
+                -
+              </button>
+
+              {/* Count */}
+              <span className="font-semibold text-lg">
+                {item.quantity}
+              </span>
+
+              {/* Plus */}
+              <button
+                onClick={() =>
+                  updateQuantity(item.productId, item.quantity + 1)
+                }
+                className="bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded text-lg"
+              >
+                +
+              </button>
+
+                </div>
+              </div>
         ))}
 
         {/* Checkout Section (OUTSIDE LOOP — IMPORTANT) */}
