@@ -77,41 +77,33 @@ public class CartService {
         return cartMapper.toDto(saved);
     }
 
-    public CartResponseDto updateQuantity(String email, Long productId, int quantity) {
+    public CartResponseDto updateQuantity(String email, Long productId, int quantity){
 
-        UserEntity user = getUser(email);
+            UserEntity user = getUser(email);
 
-        Cart cart = cartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+            Cart cart = cartRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        CartItem item = cart.getItems().stream()
-                .filter(i -> i.getProduct().getId().equals(productId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+            CartItem item = cart.getItems().stream()
+                    .filter(i -> i.getProduct().getId().equals(productId))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Item not found"));
 
-        item.setQuantity(quantity);
+            if (quantity <= 0) {
 
-        Cart updatedCart = cartRepository.save(cart);
+                cart.getItems().removeIf(
+                        i -> i.getProduct().getId().equals(productId)
+                );
 
-        List<CartItemResponse> itemResponses = updatedCart.getItems()
-                .stream()
-                .map(cartItem -> {
+            } else {
 
-                    CartItemResponse response = new CartItemResponse();
+                item.setQuantity(quantity);
+            }
 
-                    response.setProductId(cartItem.getProduct().getId());
-                    response.setProductName(cartItem.getProduct().getName());
-                    response.setQuantity(cartItem.getQuantity());
+            Cart updatedCart = cartRepository.save(cart);
 
-                    return response;
-                })
-                .toList();
-
-        return new CartResponseDto(
-                updatedCart.getId(),
-                itemResponses
-        );
-    }
+            return cartMapper.toDto(updatedCart);
+        }
 
     
     public CartResponseDto removeItem(String email, Long productId) {
@@ -156,8 +148,11 @@ public class CartService {
         if (newQuantity > 0) {
             item.setQuantity(newQuantity);
         } else {
-            // remove item completely
-            cart.getItems().remove(item);
+            
+            cart.getItems().removeIf(
+                i -> i.getProduct().getId().equals(productId)
+            );
+            
         }
 
         Cart saved = cartRepository.save(cart);

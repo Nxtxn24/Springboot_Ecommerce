@@ -24,31 +24,24 @@ export default function Cart() {
   const updateQuantity = async (productId, quantity) => {
     try {
 
+      // Ask confirmation before removing
       if (quantity <= 0) {
-        await api.delete(`/cart/remove/${productId}`);
 
-        setCart(prev => ({
-          ...prev,
-          items: prev.items.filter(
-            item => item.productId !== productId
-          )
-        }));
+        const confirmed = window.confirm(
+          "Remove this item from cart?"
+        );
 
-        return;
+        if (!confirmed) {
+          return;
+        }
       }
 
-      await api.put(`/cart/update/${productId}`, {
-        quantity,
-      });
+      const response = await api.put(
+        `/cart/update/${productId}`,
+        { quantity }
+      );
 
-      setCart(prev => ({
-        ...prev,
-        items: prev.items.map(item =>
-          item.productId === productId
-            ? { ...item, quantity }
-            : item
-        )
-      }));
+      setCart(response.data);
 
     } catch (err) {
       console.log(err);
