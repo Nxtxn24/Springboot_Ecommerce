@@ -1,11 +1,11 @@
 package com.example.app.demo.cart;
-import java.util.List;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.example.app.demo.cartItem.CartItem;
-import com.example.app.demo.cartItem.CartItemResponse;
+
 import com.example.app.demo.products.Product;
 import com.example.app.demo.products.ProductRepository;
 import com.example.app.demo.users.UserEntity;

@@ -1,15 +1,20 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import CreateProduct from "../admin/CreateProduct";
+import EditProduct from "../admin/EditProduct";
 import Login from "../pages/Login";
 import Products from "../pages/Products";
 import Cart from "../pages/Cart";
 import Orders from "../pages/Orders";
 import ProtectedRoute from "./ProtectedRoute";
-import Navbar from "./Navbar";
+import UserNavbar from "./UserNavbar";
 import AdminOrders from "../pages/AdminOrders";
+import AdminProducts from "../pages/AdminProducts";
 import Register from "../pages/Register";
+import Navbar from "./Navbar";
 import { Navigate } from "react-router-dom";
 
 function Layout() {
+
   const location = useLocation();
 
   const authPages = ["/login", "/register"];
@@ -21,48 +26,50 @@ function Layout() {
       {!hideNavbar && <Navbar />}
 
       <Routes>
+
         <Route path="/" element={<Navigate to="/login" replace />} />
-        {/* PUBLIC ROUTE */}
+
+        {/* PUBLIC */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* PROTECTED ROUTES */}
+        {/* USER */}
         <Route
           path="/products"
-          element={
-            <ProtectedRoute>
-              <Products />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Products /></ProtectedRoute>}
         />
 
         <Route
           path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Cart /></ProtectedRoute>}
         />
 
         <Route
           path="/orders"
-          element={
-            <ProtectedRoute role="USER">
-              <Orders />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute role="USER"><Orders /></ProtectedRoute>}
+        />
+
+        {/* ADMIN */}
+        <Route
+          path="/admin/orders"
+          element={<ProtectedRoute role="ADMIN"><AdminOrders /></ProtectedRoute>}
         />
 
         <Route
-          path="/admin/orders"
-          element={
-            <ProtectedRoute role="ADMIN">
-              <AdminOrders />
-            </ProtectedRoute>
-          }
+          path="/admin/products"
+          element={<ProtectedRoute role="ADMIN"><AdminProducts /></ProtectedRoute>}
         />
-        
+
+        <Route
+          path="/admin/products/new"
+          element={<ProtectedRoute role="ADMIN"><CreateProduct /></ProtectedRoute>}
+        />
+
+        <Route
+          path="/admin/products/edit/:id"
+          element={<ProtectedRoute role="ADMIN"><EditProduct /></ProtectedRoute>}
+        />
+
       </Routes>
     </>
   );
