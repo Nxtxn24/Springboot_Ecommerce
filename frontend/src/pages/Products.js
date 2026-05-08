@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
+import StarRating from "../utils/starRating";
 
 export default function Products() {
 
@@ -58,18 +59,31 @@ export default function Products() {
 
             {/* Image */}
             <img
-              src={p.imageUrl}
+              src={p.imageUrl || "/placeholder.png"}
               alt={p.name}
               className="w-full h-40 object-cover rounded-md mb-3"
             />
 
             {/* Product Name */}
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-1">
               {p.name}
             </h3>
 
+            {/* Star Rating + Count */}
+            <div className="flex items-center gap-2 mb-2">
+              <StarRating
+                rating={p.averageRating}
+                readonly
+                size={18}
+              />
+
+              <span className="text-sm text-gray-600">
+                ({p.ratingCount || 0})
+              </span>
+            </div>
+
             {/* Price */}
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-700 font-medium mb-4">
               ₹{p.price}
             </p>
 

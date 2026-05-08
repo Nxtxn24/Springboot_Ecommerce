@@ -32,43 +32,75 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public void rateProduct(String email, Long productId, int rating) {
+    public void rateProduct(String email, Long productId, int ratingValue) {
 
-        UserEntity user = userRepository.findByEmail(email)
+        UserEntity user = getUser(email);
+        Product product = getProduct(productId);
+
+        validatePurchase(user.getId(), productId);
+
+        saveOrUpdateRating(user, product, ratingValue);
+
+        updateProductAverage(product);
+    }
+
+    // =========================
+    // STEP 1: USER + PRODUCT
+    // =========================
+
+    private UserEntity getUser(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 
-        Product product = productRepository.findById(productId)
+    private Product getProduct(Long productId) {
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-        System.out.println("USER ID: " + user.getId());
-        System.out.println("PRODUCT ID: " + productId);
+    }
 
-        System.out.println("PURCHASED? " +orderRepository.existsByUserIdAndProductId(user.getId(), productId));
+    // =========================
+    // STEP 2: PURCHASE CHECK (IMPORTANT PART)
+    // =========================
+
+    private void validatePurchase(Long userId, Long productId) {
 
         boolean purchased = orderRepository
-                .existsByUserIdAndProductId(user.getId(), productId);
+                .existsByUserIdAndProductId(userId, productId);
 
         if (!purchased) {
             throw new RuntimeException("Only purchased products can be rated");
         }
+    }
+
+    // =========================
+    // STEP 3: SAVE / UPDATE RATING
+    // =========================
+
+    private void saveOrUpdateRating(UserEntity user, Product product, int ratingValue) {
 
         Optional<ProductRating> existing =
-                ratingRepository.findByUserIdAndProductId(user.getId(), productId);
+                ratingRepository.findByUserIdAndProductId(user.getId(), product.getId());
 
         if (existing.isPresent()) {
+
             ProductRating r = existing.get();
-            r.setRating(rating);
+            r.setRating(ratingValue);
             ratingRepository.save(r);
+
         } else {
+
             ProductRating r = new ProductRating();
             r.setUser(user);
             r.setProduct(product);
-            r.setRating(rating);
+            r.setRating(ratingValue);
+
             ratingRepository.save(r);
         }
-        
-
-        updateProductAverage(product);
     }
+
+    // =========================
+    // STEP 4: UPDATE PRODUCT AVG
+    // =========================
 
     private void updateProductAverage(Product product) {
 
@@ -82,7 +114,7 @@ public class RatingServiceImpl implements RatingService {
 
         product.setAverageRating(avg);
         product.setRatingCount(ratings.size());
-        
+
         productRepository.save(product);
     }
 }

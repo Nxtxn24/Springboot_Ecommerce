@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/axios";
+import StarRating from "../utils/starRating";
 
 export default function Orders() {
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,6 +20,15 @@ export default function Orders() {
       console.log("Error fetching orders", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const rateProduct = async (productId, rating) => {
+    try {
+      await api.post(`/ratings/${productId}?rating=${rating}`);
+      fetchOrders(); // refresh UI so rating updates
+    } catch (err) {
+      console.log("Rating failed", err);
     }
   };
 
@@ -80,21 +91,42 @@ export default function Orders() {
                 Total: ₹{order.totalAmount}
               </p>
 
-              <p className="text-sm text-gray-500">
-                User ID: <span className="font-medium">{order.userId}</span>
-              </p>
-
               {/* Items */}
-              <div className="border-t pt-3 space-y-2">
+              <div className="border-t pt-3 space-y-4">
+
                 <h4 className="font-medium mb-2">Items</h4>
 
-                {order.items.map((item, index) => (
+                {order.items.map((item) => (
                   <div
-                    key={index}
-                    className="flex justify-between text-sm text-gray-700"
+                    key={item.productId}
+                    className="flex flex-col gap-2 border-b pb-3"
                   >
-                    <span>{item.productName}</span>
-                    <span>x {item.quantity}</span>
+
+                    {/* Product row */}
+                    <div className="flex justify-between text-sm text-gray-700">
+                      <span className="font-medium">
+                        {item.productName}
+                      </span>
+
+                      <span>x {item.quantity}</span>
+                    </div>
+
+                    {/* ⭐ Rating */}
+                    <div className="flex items-center gap-2">
+                      <StarRating
+                        rating={item.userRating || 0}
+                        onRate={(value) =>
+                          rateProduct(item.productId, value)
+                        }
+                      />
+
+                      {item.userRating && (
+                        <span className="text-xs text-green-600">
+                          You rated: {item.userRating}★
+                        </span>
+                      )}
+                    </div>
+
                   </div>
                 ))}
               </div>
