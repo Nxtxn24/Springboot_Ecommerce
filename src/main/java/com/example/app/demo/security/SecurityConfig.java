@@ -27,6 +27,7 @@ public class SecurityConfig {
 
                             // Public: view products
                             .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                            .requestMatchers("/api/products/*/rate").hasRole("USER")
 
                             // USER access
                             .requestMatchers("/cart/**").hasRole("USER")
