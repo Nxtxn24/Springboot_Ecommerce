@@ -1,7 +1,8 @@
 package com.example.app.demo.products;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,9 +34,24 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
+    // =========================
+    // NEW PAGINATION METHOD
+    // =========================
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public Page<Product> getProducts(String search, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        if (search == null || search.isEmpty()) {
+            return productRepository.findAll(pageable);
+        }
+
+        return productRepository.findByNameContainingIgnoreCase(search, pageable);
+    }
+
+    public Page<Product> getProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findAll(pageable);
     }
 
     @Override
@@ -57,7 +73,4 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
-
-
-    
 }

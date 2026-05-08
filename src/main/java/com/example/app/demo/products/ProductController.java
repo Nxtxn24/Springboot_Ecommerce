@@ -1,5 +1,6 @@
 package com.example.app.demo.products;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -24,8 +25,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getAll() {
-        return service.getAllProducts();
+    public Page<Product> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size,
+            @RequestParam(required = false) String search
+    ) {
+        return service.getProducts(search, page, size);
     }
 
     @PutMapping("/{id}")
