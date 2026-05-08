@@ -1,5 +1,6 @@
 package com.example.app.demo.cart;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,15 +11,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CartController {
 
-    private final CartService cartService;
+    private final CartServiceImpl cartService;
 
-    // 📄 GET CART
+    
     @GetMapping
     public CartResponseDto getCart(Authentication auth) {
         return cartService.getCart(auth.getName());
     }
 
-    // ➕ ADD TO CART
+    
     @PostMapping("/add/{productId}")
     public CartResponseDto addToCart(
             @PathVariable Long productId,
@@ -28,7 +29,23 @@ public class CartController {
         return cartService.addToCart(auth.getName(), productId, quantity);
     }
 
-    // ❌ REMOVE ITEM
+    @PutMapping("/update/{productId}")
+        public ResponseEntity<CartResponseDto> updateQuantity(
+                @PathVariable Long productId,
+                @RequestBody CartQuantityRequest request,
+                Authentication auth
+        ) {
+
+            CartResponseDto response = cartService.updateQuantity(
+                    auth.getName(),
+                    productId,
+                    request.getQuantity()
+            );
+
+            return ResponseEntity.ok(response);
+        }
+
+    
     @DeleteMapping("/item/{productId}")
     public CartResponseDto removeItem(
             @PathVariable Long productId,
@@ -37,7 +54,7 @@ public class CartController {
         return cartService.removeItem(auth.getName(), productId);
     }
 
-    // 🧹 CLEAR CART
+    
     @DeleteMapping("/clear")
     public CartResponseDto clearCart(Authentication auth) {
         return cartService.clearCart(auth.getName());

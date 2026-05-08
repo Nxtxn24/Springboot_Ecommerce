@@ -6,6 +6,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -17,25 +18,35 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**").permitAll()
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+            return http
+                    .cors(cors -> {})
+                    .csrf(csrf -> csrf.disable())
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/auth/**").permitAll()
 
-                    // Public: view products
-                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                    .requestMatchers("/orders/**").hasRole("ADMIN")
+                            // Public: view products
+                            .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                            .requestMatchers("/api/products/*/rate").hasRole("USER")
 
-                    // Only ADMIN can modify
-                    .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+                            // USER access
+                            .requestMatchers("/cart/**").hasRole("USER")
+                            .requestMatchers(HttpMethod.POST, "/orders/checkout").hasRole("USER")
+                            .requestMatchers(HttpMethod.GET, "/orders/**").hasRole("USER")
 
-                    .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtFilter,
-                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+                            // ADMIN only
+                            .requestMatchers(HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+
+                            // (Optional admin-only order actions)
+                            .requestMatchers("/admin/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/orders/**").hasRole("ADMIN")
+
+                            .anyRequest().authenticated()
+                    )
+                    .addFilterBefore(jwtFilter,
+                            UsernamePasswordAuthenticationFilter.class)
+                    .build();
+        }
 }

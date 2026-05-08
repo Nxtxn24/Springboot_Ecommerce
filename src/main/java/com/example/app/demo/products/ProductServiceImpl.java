@@ -1,48 +1,63 @@
 package com.example.app.demo.products;
 
-import org.springframework.stereotype.Service;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository repository;
+    private final ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository repository) {
-        this.repository = repository;
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     @Override
-    public Product createProduct(Product product) {
-        return repository.save(product);
+    public Product createProduct(ProductRequestDto dto) {
+
+        Product product = new Product();
+
+        product.setName(dto.getName());
+        product.setDescription(dto.getDescription());
+        product.setPrice(dto.getPrice());
+        product.setCategory(dto.getCategory());
+        product.setImageUrl(dto.getImageUrl());
+
+        return productRepository.save(product);
     }
 
     @Override
     public Product getProductById(Long id) {
-        return repository.findById(id)
+        return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
     @Override
     public List<Product> getAllProducts() {
-        return repository.findAll();
+        return productRepository.findAll();
     }
 
     @Override
-    public Product updateProduct(Long id, Product updatedProduct) {
+    public Product updateProduct(Long id, ProductRequestDto dto) {
+
         Product existing = getProductById(id);
 
-        existing.setName(updatedProduct.getName());
-        existing.setDescription(updatedProduct.getDescription());
-        existing.setPrice(updatedProduct.getPrice());
-        existing.setStockQuantity(updatedProduct.getStockQuantity());
-        existing.setCategory(updatedProduct.getCategory());
+        existing.setName(dto.getName());
+        existing.setDescription(dto.getDescription());
+        existing.setPrice(dto.getPrice());
+        existing.setCategory(dto.getCategory());
+        existing.setStockQuantity(dto.getStockQuantity());
+        existing.setImageUrl(dto.getImageUrl());
 
-        return repository.save(existing);
+        return productRepository.save(existing);
     }
 
     @Override
     public void deleteProduct(Long id) {
-        repository.deleteById(id);
+        productRepository.deleteById(id);
     }
+
+
+    
 }

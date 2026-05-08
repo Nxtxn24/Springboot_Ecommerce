@@ -21,7 +21,14 @@ public class Product {
 
     @Column(nullable = false)
     private int stockQuantity;
+
     private String category;
+
+    private String imageUrl;
+
+    private double averageRating = 0.0;
+
+    private int ratingCount = 0;
 
     public Product() {}
 
@@ -70,4 +77,31 @@ public class Product {
     public void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(int ratingCount) {
+        this.ratingCount = ratingCount;
+    }
+
+    
+    
 }

@@ -1,11 +1,16 @@
 package com.example.app.demo.auth;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.app.demo.users.UserRepository;
+import com.example.app.demo.users.UserResponse;
+import com.example.app.demo.users.UserRole;
 import com.example.app.demo.security.JwtUtil;
 import com.example.app.demo.users.UserEntity;
+import com.example.app.demo.users.UserRegisterRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -22,9 +27,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserEntity register(@RequestBody UserEntity user) {
-        user.setPassword(encoder.encode(user.getPassword()));
-        return repository.save(user);
+    public UserResponse register(@RequestBody UserRegisterRequest request) {
+
+        if (repository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
+
+        UserEntity user = new UserEntity();
+        user.setEmail(request.getEmail());
+        user.setPassword(encoder.encode(request.getPassword()));
+        user.setRole(UserRole.USER);
+
+        UserEntity saved = repository.save(user);
+
+        UserResponse response = new UserResponse();
+        response.setId(saved.getId());
+        response.setEmail(saved.getEmail());
+
+        return response;
     }
 
     @PostMapping("/login")

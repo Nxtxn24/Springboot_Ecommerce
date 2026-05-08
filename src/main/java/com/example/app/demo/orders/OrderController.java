@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderServiceImpl orderService;
 
     @PostMapping("/checkout")
     public OrderResponseDto checkout(Authentication authentication) {
@@ -54,6 +54,7 @@ public class OrderController {
             @PathVariable Long orderId,
             @RequestParam OrderStatus status
     ) {
+        
         return orderService.updateStatus(orderId, status);
     }
 }
