@@ -3,6 +3,8 @@ package com.example.app.demo.cart;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.app.demo.cartItem.CartItem;
 
@@ -49,6 +51,10 @@ public class CartServiceImpl implements CartService{
     
     public CartResponseDto addToCart(String email, Long productId, int quantity) {
 
+        if (quantity <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity must be greater than zero");
+        }
+
         UserEntity user = getUser(email);
         Cart cart = getOrCreateCart(user);
 
@@ -61,10 +67,14 @@ public class CartServiceImpl implements CartService{
                 .filter(i -> i.getProduct().getId().equals(productId))
                 .findFirst();
 
+        int newQuantity = existingItem
+                .map(item -> item.getQuantity() + quantity)
+                .orElse(quantity);
+
+        validateStock(product, newQuantity);
+
         if (existingItem.isPresent()) {
-            existingItem.get().setQuantity(
-                    existingItem.get().getQuantity() + quantity
-            );
+            existingItem.get().setQuantity(newQuantity);
         } else {
             CartItem item = new CartItem();
             item.setCart(cart);
@@ -96,7 +106,7 @@ public class CartServiceImpl implements CartService{
                 );
 
             } else {
-
+                validateStock(item.getProduct(), quantity);
                 item.setQuantity(quantity);
             }
 
@@ -134,6 +144,10 @@ public class CartServiceImpl implements CartService{
 
     public CartResponseDto decreaseQuantity(String email, Long productId, int quantityToRemove) {
 
+        if (quantityToRemove <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quantity must be greater than zero");
+        }
+
         UserEntity user = getUser(email);
         Cart cart = getOrCreateCart(user);
 
@@ -157,5 +171,14 @@ public class CartServiceImpl implements CartService{
 
         Cart saved = cartRepository.save(cart);
         return cartMapper.toDto(saved);
+    }
+
+    private void validateStock(Product product, int quantity) {
+        if (quantity > product.getStockQuantity()) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Only " + product.getStockQuantity() + " item(s) are available"
+            );
+        }
     }
 }

@@ -5,10 +5,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.validation.annotation.Validated;
 
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
+@Validated
 public class CartController {
 
     private final CartServiceImpl cartService;
@@ -23,7 +27,7 @@ public class CartController {
     @PostMapping("/add/{productId}")
     public CartResponseDto addToCart(
             @PathVariable Long productId,
-            @RequestParam int quantity,
+            @RequestParam @Positive(message = "Quantity must be greater than zero") int quantity,
             Authentication auth
     ) {
         return cartService.addToCart(auth.getName(), productId, quantity);
@@ -32,7 +36,7 @@ public class CartController {
     @PutMapping("/update/{productId}")
         public ResponseEntity<CartResponseDto> updateQuantity(
                 @PathVariable Long productId,
-                @RequestBody CartQuantityRequest request,
+                @Valid @RequestBody CartQuantityRequest request,
                 Authentication auth
         ) {
 
@@ -64,7 +68,7 @@ public class CartController {
     @PatchMapping("/item/{productId}/decrease")
     public CartResponseDto decreaseQuantity(
             @PathVariable Long productId,
-            @RequestParam int quantity,
+            @RequestParam @Positive(message = "Quantity must be greater than zero") int quantity,
             Authentication auth
     ) {
         return cartService.decreaseQuantity(auth.getName(), productId, quantity);

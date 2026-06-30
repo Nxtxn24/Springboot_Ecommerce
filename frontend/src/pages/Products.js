@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/axios";
 import StarRating from "../utils/starRating";
 
 export default function Products() {
 
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [addingProductId, setAddingProductId] = useState(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -28,7 +30,8 @@ export default function Products() {
   const highlightText = (text, query) => {
     if (!query) return text;
 
-    const regex = new RegExp(`(${query})`, "gi");
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(${escapedQuery})`, "gi");
 
     return text.split(regex).map((part, i) =>
       part.toLowerCase() === query.toLowerCase() ? (
@@ -58,13 +61,15 @@ export default function Products() {
   // =========================
   // fetch
   // =========================
-  const fetchProducts = async () => {
-    setIsFetching(true);
+  const fetchProducts = useCallback(async (signal) => {
+    setLoading(true);
+    setError("");
 
     try {
-      const res = await api.get(
-        `/api/products?page=${page}&size=8&search=${debouncedSearch}`
-      );
+      const res = await api.get("/api/products", {
+        params: { page, size: 8, search: debouncedSearch },
+        signal,
+      });
 
       const data = res.data;
 
@@ -72,16 +77,21 @@ export default function Products() {
       setTotalPages(data.totalPages ?? 1);
 
     } catch (err) {
-      console.log(err);
+      if (err.code !== "ERR_CANCELED") {
+        setError(err.response?.data?.message || "Unable to load products");
+      }
     } finally {
-      setLoading(false);
-      setIsFetching(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
-  };
+  }, [page, debouncedSearch]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [page, debouncedSearch]);
+    const controller = new AbortController();
+    fetchProducts(controller.signal);
+    return () => controller.abort();
+  }, [fetchProducts]);
 
   // =========================
   // clear search
@@ -96,11 +106,17 @@ export default function Products() {
   // cart
   // =========================
   const addToCart = async (id) => {
+    setAddingProductId(id);
+    setError("");
+    setNotice("");
+
     try {
       await api.post(`/cart/add/${id}?quantity=1`);
-      alert("Added to cart");
+      setNotice("Product added to your cart");
     } catch (err) {
-      console.log(err);
+      setError(err.response?.data?.message || "Unable to add this product to the cart");
+    } finally {
+      setAddingProductId(null);
     }
   };
 
@@ -111,6 +127,18 @@ export default function Products() {
       <h2 className="text-2xl font-bold mb-6 text-center">
         Products
       </h2>
+
+      {error && (
+        <p role="alert" className="max-w-md mx-auto mb-4 text-center text-red-600">
+          {error}
+        </p>
+      )}
+
+      {notice && (
+        <p role="status" className="max-w-md mx-auto mb-4 text-center text-green-700">
+          {notice}
+        </p>
+      )}
 
       {/* SEARCH BAR */}
       <div className="max-w-md mx-auto mb-6 relative">
@@ -165,6 +193,12 @@ export default function Products() {
       {!loading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
+          {products.length === 0 && (
+            <p className="col-span-full text-center text-gray-500">
+              No products found.
+            </p>
+          )}
+
           {products.map((p) => (
             <div
               key={p.id}
@@ -174,6 +208,7 @@ export default function Products() {
               {/* image */}
               <img
                 src={p.imageUrl || "/placeholder.png"}
+                alt={p.name}
                 className="h-40 object-cover rounded mb-3"
               />
 
@@ -200,9 +235,14 @@ export default function Products() {
               {/* button */}
               <button
                 onClick={() => addToCart(p.id)}
-                className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                disabled={addingProductId === p.id || p.stockQuantity === 0}
+                className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
               >
-                Add to Cart
+                {p.stockQuantity === 0
+                  ? "Out of Stock"
+                  : addingProductId === p.id
+                    ? "Adding..."
+                    : "Add to Cart"}
               </button>
 
             </div>

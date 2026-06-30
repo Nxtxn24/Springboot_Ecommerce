@@ -15,6 +15,8 @@ import com.example.app.demo.products.Product;
 import com.example.app.demo.products.ProductRequestDto;
 import com.example.app.demo.products.ProductService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/admin/products")
@@ -44,14 +46,14 @@ public class AdminProductController {
     }
 
     @PostMapping
-    public Product createProduct(@RequestBody ProductRequestDto dto) {
+    public Product createProduct(@Valid @RequestBody ProductRequestDto dto) {
         return productService.createProduct(dto);
     }
 
     @PutMapping("/{id}")
     public Product updateProduct(
             @PathVariable Long id,
-            @RequestBody ProductRequestDto dto
+            @Valid @RequestBody ProductRequestDto dto
     ) {
         return productService.updateProduct(id, dto);
     }

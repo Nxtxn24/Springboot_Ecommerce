@@ -7,12 +7,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.validation.annotation.Validated;
 
 import com.example.app.demo.products.Product;
 import com.example.app.demo.products.ProductService;
 
 @RestController
 @RequestMapping("/ratings")
+@Validated
 public class RatingController {
 
     private final RatingService ratingService;
@@ -26,7 +30,7 @@ public class RatingController {
     @PostMapping("/{productId}")
     public ResponseEntity<?> rateProduct(
             @PathVariable Long productId,
-            @RequestParam int rating,
+            @RequestParam @Min(1) @Max(5) int rating,
             Authentication auth
     ) {
         ratingService.rateProduct(auth.getName(), productId, rating);

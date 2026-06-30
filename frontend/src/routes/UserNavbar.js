@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 
 export default function UserNavbar() {
   const navigate = useNavigate();
-  const email = localStorage.getItem("userEmail");
   const handleLogout = () => {
     logout();
     navigate("/login");

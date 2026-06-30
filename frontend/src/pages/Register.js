@@ -76,6 +76,7 @@ export default function Register() {
             value={form.password}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            minLength={8}
             required
           />
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../api/axios"
 
@@ -17,15 +17,7 @@ export default function EditProduct() {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-
-    if (!id) return;
-
-    fetchProduct();
-
-    }, [id]);
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
 
   if (!id) return;
 
@@ -51,7 +43,11 @@ export default function EditProduct() {
 
     setLoading(false);
   }
-};
+  }, [id]);
+
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
 
   const handleChange = (e) => {
 

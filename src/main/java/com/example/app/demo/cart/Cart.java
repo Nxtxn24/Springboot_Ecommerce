@@ -6,7 +6,7 @@ import java.util.List;
 import com.example.app.demo.cartItem.CartItem;
 import com.example.app.demo.users.UserEntity;
 
-import jakarta.persistence.*;;
+import jakarta.persistence.*;
 
 @Entity
 public class Cart {

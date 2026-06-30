@@ -3,6 +3,8 @@ package com.example.app.demo.products;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -14,7 +16,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public Product create(@RequestBody ProductRequestDto product) {
+    public Product create(@Valid @RequestBody ProductRequestDto product) {
         return service.createProduct(product);
     }
 
@@ -33,7 +35,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public Product update(@PathVariable Long id, @RequestBody ProductRequestDto product) {
+    public Product update(@PathVariable Long id, @Valid @RequestBody ProductRequestDto product) {
         return service.updateProduct(id, product);
     }
 

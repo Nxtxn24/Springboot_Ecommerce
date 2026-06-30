@@ -2,6 +2,8 @@
 
 package com.example.app.demo.products;
 
+import java.math.BigDecimal;
+
 
 import jakarta.persistence.*;
 
@@ -16,8 +18,8 @@ public class Product {
     private String name;
     private String description;
 
-    @Column(nullable = false)
-    private double price;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal price;
 
     @Column(nullable = false)
     private int stockQuantity;
@@ -32,7 +34,7 @@ public class Product {
 
     public Product() {}
 
-    public Product(String name, String description, double price, int stockQuantity, String category) {
+    public Product(String name, String description, BigDecimal price, int stockQuantity, String category) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -65,10 +67,10 @@ public class Product {
     public void setDescription(String description) {
         this.description = description;
     }
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
     public int getStockQuantity() {

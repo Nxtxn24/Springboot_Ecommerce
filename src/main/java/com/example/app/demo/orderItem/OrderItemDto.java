@@ -1,10 +1,12 @@
 package com.example.app.demo.orderItem;
 
+import java.math.BigDecimal;
+
 public class OrderItemDto {
 
     private Long productId;
     private String productName;
-    private double priceAtPurchase;
+    private BigDecimal priceAtPurchase;
     private int quantity;
     public Long getProductId() {
         return productId;
@@ -18,10 +20,10 @@ public class OrderItemDto {
     public void setProductName(String productName) {
         this.productName = productName;
     }
-    public double getPriceAtPurchase() {
+    public BigDecimal getPriceAtPurchase() {
         return priceAtPurchase;
     }
-    public void setPriceAtPurchase(double priceAtPurchase) {
+    public void setPriceAtPurchase(BigDecimal priceAtPurchase) {
         this.priceAtPurchase = priceAtPurchase;
     }
     public int getQuantity() {

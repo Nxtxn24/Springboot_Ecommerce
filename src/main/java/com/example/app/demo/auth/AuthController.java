@@ -10,7 +10,10 @@ import com.example.app.demo.users.UserResponse;
 import com.example.app.demo.users.UserRole;
 import com.example.app.demo.security.JwtUtil;
 import com.example.app.demo.users.UserEntity;
+import com.example.app.demo.users.UserLoginRequest;
 import com.example.app.demo.users.UserRegisterRequest;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody UserRegisterRequest request) {
+    public UserResponse register(@Valid @RequestBody UserRegisterRequest request) {
 
         if (repository.findByEmail(request.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
@@ -48,12 +51,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserEntity request) {
+    public String login(@Valid @RequestBody UserLoginRequest request) {
         UserEntity user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"));
 
         if (!encoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
         return jwtUtil.generateToken(user);

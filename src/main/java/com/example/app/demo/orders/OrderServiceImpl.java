@@ -1,16 +1,21 @@
 package com.example.app.demo.orders;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.app.demo.cart.Cart;
 import com.example.app.demo.cart.CartRepository;
 import com.example.app.demo.cartItem.CartItem;
 import com.example.app.demo.orderItem.OrderItem;
 import com.example.app.demo.orderItem.OrderItemDto;
+import com.example.app.demo.products.Product;
+import com.example.app.demo.products.ProductRepository;
 import com.example.app.demo.users.UserEntity;
 import com.example.app.demo.users.UserRepository;
 
@@ -25,6 +30,7 @@ public class OrderServiceImpl {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     // Get user by email
     private UserEntity getUser(String email) {
@@ -90,20 +96,38 @@ public class OrderServiceImpl {
         order.setCreatedAt(LocalDateTime.now());
 
         List<OrderItem> orderItems = new ArrayList<>();
-        double total = 0;
+        BigDecimal total = BigDecimal.ZERO;
 
         for (CartItem cartItem : cart.getItems()) {
+
+            Product product = productRepository.findWithLockById(cartItem.getProduct().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+            if (cartItem.getQuantity() <= 0) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart quantity must be positive");
+            }
+
+            if (cartItem.getQuantity() > product.getStockQuantity()) {
+                throw new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Insufficient stock for " + product.getName()
+                                + ". Available: " + product.getStockQuantity()
+                );
+            }
 
             OrderItem item = new OrderItem();
 
             item.setOrder(order); // IMPORTANT (owning side)
 
-            item.setProductId(cartItem.getProduct().getId());
-            item.setProductName(cartItem.getProduct().getName());
-            item.setPriceAtPurchase(cartItem.getProduct().getPrice());
+            item.setProductId(product.getId());
+            item.setProductName(product.getName());
+            item.setPriceAtPurchase(product.getPrice());
             item.setQuantity(cartItem.getQuantity());
 
-            total += item.getPriceAtPurchase() * item.getQuantity();
+            total = total.add(
+                    item.getPriceAtPurchase().multiply(BigDecimal.valueOf(item.getQuantity()))
+            );
+            product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
 
             orderItems.add(item);
         }

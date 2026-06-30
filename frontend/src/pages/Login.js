@@ -1,9 +1,8 @@
-import { parseJwt } from "../utils/jwt";
 import { useState, useEffect } from "react";
 import { api } from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { getAuthUser } from "../utils/authHelper";
+import { getStoredUser } from "../utils/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -12,7 +11,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = getAuthUser();
+    const user = getStoredUser();
 
     if (user) {
       if (user.role === "ADMIN") {
@@ -37,7 +36,7 @@ export default function Login() {
 
       localStorage.setItem("token", token);
 
-      const user = getAuthUser();
+      const user = getStoredUser();
 
       if (!user) throw new Error("Invalid token");
 
@@ -136,4 +135,3 @@ export default function Login() {
   
 
 
-  

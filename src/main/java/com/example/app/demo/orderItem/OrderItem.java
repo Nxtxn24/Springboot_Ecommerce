@@ -1,4 +1,5 @@
 package com.example.app.demo.orderItem;
+import java.math.BigDecimal;
 import com.example.app.demo.orders.OrderEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -22,7 +23,8 @@ public class OrderItem {
 
     private String productName;
 
-    private Double priceAtPurchase;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal priceAtPurchase;
 
     private int quantity;
 
@@ -58,11 +60,11 @@ public class OrderItem {
         this.productName = productName;
     }
 
-    public Double getPriceAtPurchase() {
+    public BigDecimal getPriceAtPurchase() {
         return priceAtPurchase;
     }
 
-    public void setPriceAtPurchase(Double priceAtPurchase) {
+    public void setPriceAtPurchase(BigDecimal priceAtPurchase) {
         this.priceAtPurchase = priceAtPurchase;
     }
 

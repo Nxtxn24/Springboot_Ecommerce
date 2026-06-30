@@ -23,8 +23,6 @@ public class WishlistController {
 
     @PostMapping("/{productId}")
     public void toggle(@PathVariable Long productId, Authentication auth) {
-        System.out.println("USER: " + auth.getName());
-        System.out.println("PRODUCT: " + productId);
         service.toggleWishlist(auth.getName(), productId);
     }
 

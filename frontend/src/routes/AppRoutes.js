@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
 import CreateProduct from "../admin/CreateProduct";
 import EditProduct from "../admin/EditProduct";
 import Login from "../pages/Login";
@@ -6,12 +6,10 @@ import Products from "../pages/Products";
 import Cart from "../pages/Cart";
 import Orders from "../pages/Orders";
 import ProtectedRoute from "./ProtectedRoute";
-import UserNavbar from "./UserNavbar";
 import AdminOrders from "../pages/AdminOrders";
 import AdminProducts from "../pages/AdminProducts";
 import Register from "../pages/Register";
 import Navbar from "./Navbar";
-import { Navigate } from "react-router-dom";
 
 function Layout() {
 
@@ -36,12 +34,12 @@ function Layout() {
         {/* USER */}
         <Route
           path="/products"
-          element={<ProtectedRoute><Products /></ProtectedRoute>}
+          element={<ProtectedRoute role="USER"><Products /></ProtectedRoute>}
         />
 
         <Route
           path="/cart"
-          element={<ProtectedRoute><Cart /></ProtectedRoute>}
+          element={<ProtectedRoute role="USER"><Cart /></ProtectedRoute>}
         />
 
         <Route
@@ -77,7 +75,7 @@ function Layout() {
 
 export default function AppRoutes() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Layout />
     </BrowserRouter>
   );

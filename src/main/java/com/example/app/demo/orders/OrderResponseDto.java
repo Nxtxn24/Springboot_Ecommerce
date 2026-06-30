@@ -1,6 +1,7 @@
 package com.example.app.demo.orders;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.example.app.demo.orderItem.OrderItemDto;
@@ -8,7 +9,7 @@ import com.example.app.demo.orderItem.OrderItemDto;
 public class OrderResponseDto {
 
     private Long orderId;
-    private double totalAmount;
+    private BigDecimal totalAmount;
     private String status;
     private LocalDateTime createdAt;
     private Long userId;
@@ -25,11 +26,11 @@ public class OrderResponseDto {
         this.orderId = orderId;
     }
 
-    public double getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(double totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 
